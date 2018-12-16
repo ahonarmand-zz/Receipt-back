@@ -1,18 +1,23 @@
-from app import db
+from app import db, app, bcrypt
 import jwt
+
+import datetime
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(120), index=True, unique=True, nullable=False)
+    name = db.Column(db.String(120), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True, nullable=False)
     profile_pic_path = db.Column(db.String(200), unique=True)
     password_hash = db.Column(db.String(128))
 
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+    def __init__(self, email, password, name = None, profile_pic_path = None):
+        self.email = email
+        self.password_hash = bcrypt.generate_password_hash(password)    #complexity can e increased by setting log_rounds
+        self.name = name
+        self.profile_pic_path = profile_pic_path
 
     def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+        return bcrypt.check_password_hash(self.password_hash, password)
         
     def encode_auth_token(self, user_id):
         """
@@ -32,6 +37,21 @@ class User(db.Model):
             )
         except Exception as e:
             return e
+
+    @staticmethod
+    def decode_auth_token(auth_token):
+        """
+        Validates the auth token
+        :param auth_token:
+        :return: integer|string
+        """
+        try:
+            payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
+            return payload['sub']
+        except jwt.ExpiredSignatureError:
+            return 'Signature expired. Please log in again.'
+        except jwt.InvalidTokenError:
+            return 'Invalid token. Please log in again.'
 
     def __repr__(self):
         return '<User {}>'.format(self.name)

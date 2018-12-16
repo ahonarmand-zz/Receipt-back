@@ -1,1 +1,2 @@
 FLASK_APP=receipt_back.py
+FLASK_ENV=development
