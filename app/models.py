@@ -26,7 +26,7 @@ class User(db.Model):
         """
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, seconds=5),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, minutes=10),
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
@@ -42,16 +42,14 @@ class User(db.Model):
     def decode_auth_token(auth_token):
         """
         Validates the auth token
-        :param auth_token:
-        :return: integer|string
         """
         try:
             payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
             return payload['sub']
         except jwt.ExpiredSignatureError:
-            return 'Signature expired. Please log in again.'
+            raise Exception('Signature expired. Please log in again.')
         except jwt.InvalidTokenError:
-            return 'Invalid token. Please log in again.'
+            raise 'Invalid token. Please log in again.'
 
     def __repr__(self):
         return '<User {}>'.format(self.name)

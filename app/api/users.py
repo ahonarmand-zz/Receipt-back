@@ -2,8 +2,11 @@ from app.api import bp
 from flask import request, make_response, jsonify
 from app.models import User
 from app import bcrypt, db
+from app.api.authorization import login_required
 
-@bp.route('/user/<int:id>', methods=['GET'])
+
+@bp.route('/user', methods=['GET'])
+@login_required
 def get_user(id):
     return "hi " + str(id)
 
@@ -83,4 +86,5 @@ def login():
             'message': 'Try again'
         }
         return make_response(jsonify(responseObject)), 500
+
 
