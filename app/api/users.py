@@ -1,7 +1,7 @@
 from app.api import bp
 from flask import request, make_response, jsonify
 from app.models import User
-from app import bcrypt, db
+from app import db
 from app.api.authorization import login_required
 
 
@@ -9,6 +9,11 @@ from app.api.authorization import login_required
 @login_required
 def get_user(id):
     return "hi " + str(id)
+
+@bp.route('/user', methods=['POST'])
+@login_required
+def get_user_two(id):
+    return "json: " + str(request.get_json())
 
 @bp.route('/user/register', methods=['POST'])
 def register():

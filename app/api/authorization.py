@@ -3,9 +3,11 @@ from app.models import User
 import functools
 
 def login_required(func):
+    print("in login_required")
 
     @functools.wraps(func)
     def wrapper_login_required(*args, **kwargs):
+        print("in wrapper_login_required")
         auth_header = request.headers.get('Authorization')
         
         if auth_header:

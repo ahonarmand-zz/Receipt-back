@@ -1,5 +1,6 @@
 from app import db, app, bcrypt
 import jwt
+# from db import PrimaryKeyConstraint
 
 import datetime
 
@@ -44,6 +45,7 @@ class User(db.Model):
         Validates the auth token
         """
         try:
+            # Expiration time is automatically verified in jwt.decode() and raises jwt.ExpiredSignatureError if the expiration time is in the past
             payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
             return payload['sub']
         except jwt.ExpiredSignatureError:
@@ -57,9 +59,37 @@ class User(db.Model):
 
 class Debt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    payer = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    receiver = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    payer = db.Column(db.Integer, nullable=False)
+    receiver = db.Column(db.Integer, nullable=False)
     amount = db.Column(db.Numeric, nullable=False)
 
     def __repr__(self):
-        return f'Debt of {self.amount} from {self.payer} to {self.received}'
+        return f'Debt: {self.payer} owes {self.receiver} ${self.amount}'
+
+class Group(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), index=True, nullable=False)      # e.g. spicy_tree_house_group
+
+class Group_Expense(db.Model):
+    expense_id = db.Column(db.Integer, primary_key=True)
+    group_id = db.Column(db.Integer, nullable=False)
+    expense_name = db.Column(db.String(120), index=True)    # e.g. grocery expenses
+
+
+class Member(db.Model):
+    # e.g. Ali is part of spicy_tree_house_group
+    user_id = db.Column(db.Integer, primary_key = True)   # FK to user
+    group_id = db.Column(db.Integer, primary_key = True)    # FK to Group         
+    pending = db.Column(db.Boolean, nullable=False)     # other members (or an admin member need to approve the joining)
+    # __table_args__ = (
+    #     PrimaryKeyConstraint('user_id', 'group_id'),
+    # )
+
+class Member_Expense_Share(db.Model):
+    user_id = db.Column(db.Integer, primary_key = True)
+    group_expense_id = db.Column(db.Integer, primary_key = True)
+    share = db.Column(db.Numeric, nullable=False)
+    # __table_args__ = (
+    #     PrimaryKeyConstraint('user_id', 'group_expense_id'),
+    # )
+
