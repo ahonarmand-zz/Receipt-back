@@ -27,7 +27,11 @@ def login_required(func):
 
             user = User.query.filter_by(id=user_id).first()
             if user:
-                return func(user_id, *args, **kwargs)
+                try:
+                    return func(user_id, *args, **kwargs)
+                except Exception as e:
+                    print(repr(e))
+                    make_response(repr(e)), 501
         
         except Exception as e:
             responseObject = {

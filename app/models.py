@@ -1,5 +1,6 @@
 from app import db, app, bcrypt
 import jwt
+from sqlalchemy import PrimaryKeyConstraint
 # from db import PrimaryKeyConstraint
 
 import datetime
@@ -77,6 +78,10 @@ class Group_Expense(db.Model):
 
 
 class Member(db.Model):
+    def __init__(self, user_id, group_id, pending):
+        self.user_id = user_id
+        self.group_id = group_id
+        self.pending = pending
     # e.g. Ali is part of spicy_tree_house_group
     user_id = db.Column(db.Integer, primary_key = True)   # FK to user
     group_id = db.Column(db.Integer, primary_key = True)    # FK to Group         
