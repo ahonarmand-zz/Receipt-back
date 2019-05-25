@@ -3,6 +3,7 @@ from flask import request, make_response, jsonify
 from app.models import User
 from app import db
 from app.api.authorization import login_required
+from flask_cors import cross_origin
 
 
 @bp.route('/user', methods=['GET'])
@@ -16,10 +17,12 @@ def get_user_two(id):
     return "json: " + str(request.get_json())
 
 @bp.route('/user/register', methods=['POST'])
+@cross_origin()
 def register():
     print("\n****HERE!\n")
     # get the post data
     post_data = request.get_json()
+    print(post_data)
     # check if user already exists
     user = User.query.filter_by(email=post_data.get('email')).first()
     if not user:
@@ -61,8 +64,11 @@ def register():
 
     
 @bp.route('/user/login', methods=['POST'])
+@cross_origin()
 def login():
     # get the post data
+    print("un /user/login")
+    print(request.get_json())
     post_data = request.get_json()
     try:
         # fetch the user data
