@@ -9,6 +9,8 @@ def login_required(func):
     def wrapper_login_required(*args, **kwargs):
         print("in wrapper_login_required")
         auth_header = request.headers.get('Authorization')
+
+        print(auth_header)
         
         if auth_header:
             try:
@@ -20,10 +22,11 @@ def login_required(func):
                 }
                 return make_response(jsonify(responseObject)), 401
         else:
-            return make_response(jsonify({"status": 'fail', "message": 'missing credentials'}))
+            return make_response(jsonify({"status": 'fail', "message": 'missing credentials'})), 403
         
         try:
             user_id = User.decode_auth_token(auth_token)
+
 
             user = User.query.filter_by(id=user_id).first()
             if user:

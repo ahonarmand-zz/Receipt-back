@@ -83,6 +83,7 @@ def login():
                     'message': 'Successfully logged in.',
                     'auth_token': auth_token.decode()
                 }
+                print(responseObject)
                 return make_response(jsonify(responseObject)), 200
         else:
             responseObject = {

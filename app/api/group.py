@@ -3,6 +3,7 @@ from flask import request, make_response, jsonify
 from app.models import User, Group, Member
 from app import db
 from app.api.authorization import login_required
+from flask_cors import cross_origin
 
 @bp.route('/group', methods=['POST'])
 @login_required
@@ -11,27 +12,26 @@ def create_group(user_id):
 
     post_data = request.get_json()
 
-    print(post_data['name'])
+    group_name = post_data['group_name']
 
-    group = Group(name = post_data['name'])
+    print(group_name)
+
+    
+    group = Group.query.filter_by(name = group_name).first()
+    if group:
+        return make_response(jsonify({"success": False, "message": "group already exists. Try a different name"})), 409
+
+
     # TODO: add the member in a transaction
-
-    print(1)
-
+    group = Group(name = group_name)
     db.session.add(group)
-    print(2)
     db.session.commit()
-    print(3)
 
-    group = group.query.filter_by(name = post_data['name']).first()
-
-    print(4)
+    group = group.query.filter_by(name = group_name).first()
 
     member = Member(user_id, group.id, False)
 
-    print(5)
     db.session.add(member)
-    print(6)
     db.session.commit()
 
-    return "group created"
+    return make_response(jsonify({"success": True, "message": "group created successfully"})), 200
