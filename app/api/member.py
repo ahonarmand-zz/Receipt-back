@@ -28,3 +28,17 @@ def add_member(user_id):
     db.session.add(member)
     db.session.commit()
     return "member created"
+
+
+
+@bp.route('/member/groups', methods=['GET'])
+@login_required
+def get_groups(user_id):
+
+    query = db.session.query(Group, Member).filter(Group.id == Member.group_id).filter(Member.user_id == user_id)
+
+    for r in query:
+        print(r[0].name)
+        print(r[1].group_id)
+        print(r[1].user_id)
+    return "ok"
