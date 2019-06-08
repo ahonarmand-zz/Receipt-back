@@ -29,16 +29,26 @@ def add_member(user_id):
     db.session.commit()
     return "member created"
 
+@bp.route('/member/approve', methods=['POST'])
+@login_required
+def approve_join(user_id):
+    post_data = request.get_json()
+    member = Member.query.filter(user_id = user_id).filter(group_id = post_data["group_id"]).first()
 
+    if not member:
+        return "user is not part of this group"
+
+    if member.pending:
+        member.pending = False
+        db.session.commit()
 
 @bp.route('/member/groups', methods=['GET'])
 @login_required
 def get_groups(user_id):
-
     query = db.session.query(Group, Member).filter(Group.id == Member.group_id).filter(Member.user_id == user_id)
 
-    for r in query:
-        print(r[0].name)
-        print(r[1].group_id)
-        print(r[1].user_id)
-    return "ok"
+    response = [{"id": q[0].id, "name": q[0].name} for q in query]
+    print(response)
+
+    print(jsonify(response))
+    return make_response(jsonify(response)), 200

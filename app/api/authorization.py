@@ -27,7 +27,6 @@ def login_required(func):
         try:
             user_id = User.decode_auth_token(auth_token)
 
-
             user = User.query.filter_by(id=user_id).first()
             if user:
                 try:

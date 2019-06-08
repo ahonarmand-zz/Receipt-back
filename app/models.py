@@ -50,8 +50,10 @@ class User(db.Model):
             payload = jwt.decode(auth_token, app.config.get('SECRET_KEY'))
             return payload['sub']
         except jwt.ExpiredSignatureError:
+            print('Signature expired. Please log in again.')
             raise Exception('Signature expired. Please log in again.')
         except jwt.InvalidTokenError:
+            print("Invalid token. Please log in again.")
             raise 'Invalid token. Please log in again.'
 
     def __repr__(self):

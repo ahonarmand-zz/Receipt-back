@@ -5,6 +5,8 @@ from app import db
 from app.api.authorization import login_required
 from flask_cors import cross_origin
 
+
+
 @bp.route('/group', methods=['POST'])
 @login_required
 def create_group(user_id):
@@ -35,3 +37,19 @@ def create_group(user_id):
     db.session.commit()
 
     return make_response(jsonify({"success": True, "message": "group created successfully"})), 200
+
+
+@bp.route('/group/<group_id>/members', methods=['GET'])
+@login_required
+def get_members(user_id, group_id):
+    print(f'user_id: {user_id}')
+    print(f'group_id: {group_id}')
+    query = \
+        db.session.query(Group, Member, User) \
+        .filter(Group.id == Member.group_id) \
+        .filter(Group.id == group_id) \
+        .filter(Member.user_id == User.id)
+
+    response = [{"id": q[2].id, "name": q[2].name, "email": q[2].email} for q in query]
+
+    return make_response(jsonify(response)), 200
