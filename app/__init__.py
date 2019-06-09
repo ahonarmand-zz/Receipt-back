@@ -12,7 +12,9 @@ bcrypt = Bcrypt(app)
 migrate = Migrate(app, db)
 
 from app.api import bp as api_bp
-CORS(api_bp, resources={r"/api/*": {"origins": "*"}})
+cors = CORS()
+cors.init_app(api_bp, origins='*')
+
 app.register_blueprint(api_bp, url_prefix='/api')
 
 from app import routes, models

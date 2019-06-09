@@ -1,6 +1,7 @@
 from app import db, app, bcrypt
 import jwt
 from sqlalchemy import PrimaryKeyConstraint
+import json
 # from db import PrimaryKeyConstraint
 
 import datetime
@@ -77,6 +78,15 @@ class Group_Expense(db.Model):
     expense_id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, nullable=False)
     expense_name = db.Column(db.String(120), index=True)    # e.g. grocery expenses
+
+    @property
+    def serialize(self):
+       return {
+           'expense_id': self.expense_id,
+           'group_id':  self.group_id,
+           'expense_name'  : self.expense_name
+       }
+
 
 
 class Member(db.Model):
