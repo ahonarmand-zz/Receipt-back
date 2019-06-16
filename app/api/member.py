@@ -11,18 +11,18 @@ def add_member(user_id):
 
     post_data = request.get_json()
 
-    new_member_email = post_data['new_member_email']
-    group_name = post_data['group_name']
+    new_member_email = post_data['member_email']
+    group_id = post_data['group_id']
 
     print(new_member_email)
-    print(group_name)
+    print(group_id)
 
-    group = Group.query.filter_by(name = group_name).first()
+    group = Group.query.filter_by(id = group_id).first()
     new_member_user = User.query.filter_by(email=new_member_email).first()
 
     print("adding " + new_member_email)
 
-    member = Member(new_member_user.id, group.id, True)
+    member = Member(new_member_user.id, group.id, False)        #TODO: make this True and handle the pending case
 
     print("adding to db")    
     db.session.add(member)
