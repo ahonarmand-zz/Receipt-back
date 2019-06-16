@@ -1,8 +1,9 @@
 from app.api import bp
 from flask import request, make_response, jsonify
-from app.models import User, Group, Member, Group_Expense
+from app.models import User, Group, Member, Group_Expense, Member_Expense_Share
 from app import db
 from app.api.authorization import login_required
+from collections import defaultdict
 
 @bp.route('/group', methods=['POST'])
 @login_required
@@ -59,3 +60,31 @@ def get_expenses(user_id, group_id):
     response = [r[1].serialize for r in results]
     print(response)
     return make_response(jsonify(response)), 200
+
+
+@bp.route('/group/<group_id>/member_expenses', methods=['GET'])
+@login_required
+def get_member_expenses(user_id, group_id):
+
+    print(db.session.query(Member_Expense_Share).all())
+
+    results = \
+        db.session.query(Group, Group_Expense, Member, User, Member_Expense_Share)\
+            .filter(Group.id == group_id)\
+            .filter(Group.id == Group_Expense.group_id)\
+            .filter(Member.group_id == group_id)\
+            .filter(User.id == Member.user_id)\
+            .outerjoin(Member_Expense_Share, Group_Expense.expense_id == Member_Expense_Share.group_expense_id)\
+            .all()
+
+    email_to_expenses = defaultdict(list)
+    email_to_name = {}
+    for r in results:
+        email_to_name[r[3].email] = r[3].name
+        email_to_expenses[r[3].email].append( {"expense_name": r[1].expense_name, "expense_share": int(100*r[4].share) if r[4]!=None else 0} )
+        
+    resp = []
+    for email, expenses in email_to_expenses.items():
+        resp.append({"email": email, "name": email_to_name[email], "expense_shares": expenses})
+
+    return make_response(jsonify(resp)), 200

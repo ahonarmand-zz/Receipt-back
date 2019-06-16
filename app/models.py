@@ -29,7 +29,7 @@ class User(db.Model):
         """
         try:
             payload = {
-                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, minutes=10),
+                'exp': datetime.datetime.utcnow() + datetime.timedelta(days=0, minutes=60), #TODO: read this value from config
                 'iat': datetime.datetime.utcnow(),
                 'sub': user_id
             }
@@ -106,6 +106,7 @@ class Member_Expense_Share(db.Model):
     user_id = db.Column(db.Integer, primary_key = True)
     group_expense_id = db.Column(db.Integer, primary_key = True)
     share = db.Column(db.Numeric, nullable=False)
+    # pending = db.Column(db.Boolean, nullable=False)       TODO how to do migration in flask-sql-alchemy
     # __table_args__ = (
     #     PrimaryKeyConstraint('user_id', 'group_expense_id'),
     # )
