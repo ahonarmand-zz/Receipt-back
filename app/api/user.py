@@ -19,20 +19,20 @@ def get_user_two(id):
 @bp.route('/user/register', methods=['POST'])
 @cross_origin()
 def register():
-    print("\n****HERE!\n")
     # get the post data
     post_data = request.get_json()
     print(post_data)
+
+    email = post_data.get('email').lower()
+    
     # check if user already exists
-    user = User.query.filter_by(email=post_data.get('email')).first()
+    user = User.query.filter_by(email=email).first()
     if not user:
         try:
             user = User(
-                email=post_data.get('email'),
+                email=email,
                 password=post_data.get('password')
             )
-
-            print(user.id)
 
             # insert the user
             db.session.add(user)
