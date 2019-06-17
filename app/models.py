@@ -75,14 +75,14 @@ class Group(db.Model):
     name = db.Column(db.String(120), index=True, nullable=False)      # e.g. spicy_tree_house_group
 
 class Group_Expense(db.Model):
-    expense_id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
     group_id = db.Column(db.Integer, nullable=False)
     expense_name = db.Column(db.String(120), index=True)    # e.g. grocery expenses
 
     @property
     def serialize(self):
        return {
-           'expense_id': self.expense_id,
+           'id': self.id,
            'group_id':  self.group_id,
            'expense_name'  : self.expense_name
        }

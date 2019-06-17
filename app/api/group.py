@@ -75,14 +75,20 @@ def get_member_expenses(user_id, group_id):
             .filter(Group.id == Group_Expense.group_id)\
             .filter(Member.group_id == group_id)\
             .filter(User.id == Member.user_id)\
-            .outerjoin(Member_Expense_Share, and_(Group_Expense.expense_id == Member_Expense_Share.group_expense_id, User.id == Member_Expense_Share.user_id))\
+            .outerjoin(Member_Expense_Share, and_(Group_Expense.id == Member_Expense_Share.group_expense_id, User.id == Member_Expense_Share.user_id))\
             .all()
 
     email_to_expenses = defaultdict(list)
     email_to_name = {}
     for r in results:
         email_to_name[r[3].email] = r[3].name
-        email_to_expenses[r[3].email].append( {"expense_name": r[1].expense_name, "expense_share": int(100*r[4].share) if (r[4]!=None and r[4].share!=None) else 0} )
+        email_to_expenses[r[3].email].append(\
+            {
+                "expense_name": r[1].expense_name,
+                "expense_id": r[1].id,
+                "expense_share": int(100*r[4].share) if (r[4]!=None and r[4].share!=None) else 0
+            }\
+        )
         
     resp = []
     for email, expenses in email_to_expenses.items():
