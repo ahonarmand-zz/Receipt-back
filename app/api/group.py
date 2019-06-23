@@ -86,7 +86,7 @@ def get_member_expenses(user_id, group_id):
             {
                 "expense_name": r[1].expense_name,
                 "expense_id": r[1].id,
-                "expense_share": int(100*r[4].share) if (r[4]!=None and r[4].share!=None) else 0
+                "expense_share": "{:.2f}".format(r[4].share) if (r[4]!=None and r[4].share!=None) else 0
             }\
         )
         
